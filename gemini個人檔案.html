@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鄭羽玲 Yu-Ling Cheng | 烘焙工藝 x 視覺整合 x AI 美感專家</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#FAF8F5',
+                            100: '#F4EFEA',
+                            200: '#E8DDD4',
+                            300: '#D5C3B3',
+                            400: '#C1A793',
+                            500: '#A88B74',
+                            600: '#8C6F5A',
+                            700: '#6E5544',
+                            800: '#523F32',
+                            900: '#382B22',
+                        },
+                        accent: '#D4A373',
+                        darkBg: '#1A1816',
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Noto Sans TC', 'sans-serif'],
+                        serif: ['Playfair Display', 'Noto Serif TC', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- React & Babel Core -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@400;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #FAF8F5;
+            color: #382B22;
+            font-family: 'Plus Jakarta Sans', 'Noto Sans TC', sans-serif;
+        }
+        .serif-title {
+            font-family: 'Playfair Display', 'Noto Serif TC', serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(213, 195, 179, 0.3);
+        }
+        .glass-card-dark {
+            background: rgba(35, 30, 27, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(140, 111, 90, 0.2);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #F4EFEA;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #C1A793;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="selection:bg-brand-300 selection:text-brand-900">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Data Models
+        const CERTIFICATIONS = [
+            { title: "烘焙食品 - 西點蛋糕麵包 乙級", category: "專業國家證照", desc: "具備高階烘焙理論與大型生產/研發能力" },
+            { title: "烘焙食品 - 麵包 丙級", category: "專業國家證照", desc: "標準化基礎麵包製作實務" },
+            { title: "專業咖啡師認證 - 初級", category: "飲品與風味", desc: "義式咖啡萃取、奶泡打發與風味搭配" },
+            { title: "飲料調製 - 丙級", category: "飲品與風味", desc: "調酒與無酒精特調風味組合實務" },
+            { title: "商業英檢 - 第三級", category: "語言與溝通", desc: "具備基礎商務英文溝通與讀寫能力" },
+            { title: "TQC Power Point 實用級", category: "數位資訊", desc: "簡報企劃與商業視覺構圖表達" },
+            { title: "中文能力檢定 - 中高等", category: "文字文案", desc: "優異的文字敘事與品牌內容創作能力" },
+        ];
+
+        const EXPERIENCES = [
+            {
+                company: "JR東日本飯店 台北 (JR East Hotel)",
+                role: "點心房師傅 / 烘焙研發夥伴",
+                period: "精緻烘焙實務",
+                highlights: "承襲日式細緻職人精神，協助法式經典甜點製作、盤飾甜點設計與日系烘焙品管控制。"
+            },
+            {
+                company: "亞尼克菓子工坊 (Yannick)",
+                role: "烘焙製作與產品開發",
+                period: "知名連鎖品牌體驗",
+                highlights: "參與生乳捲系列與節慶甜點量產標準流程化、掌控品質穩定度與配方優化。"
+            },
+            {
+                company: "個人品牌 & 數位視覺顧問",
+                role: "短影音剪輯 / AI 美彩圖像 / 美食企劃",
+                period: "自由創作與跨界合作",
+                highlights: "結合美食專業與AI生成技術，為餐飲品牌進行短影音內容企劃、Reels腳本拍攝與風格視覺建立。"
+            }
+        ];
+
+        const PORTFOLIO_ITEMS = [
+            {
+                id: 1,
+                title: "法式經典 Saint-Honoré 聖多諾黑",
+                category: "baking",
+                image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80",
+                desc: "嚴選焦糖千層酥底，搭配榛果香緹與酥脆焦糖泡芙，展現純正法式工藝巧思。",
+                tags: ["法式甜點", "千層工藝", "商品研發"]
+            },
+            {
+                id: 2,
+                title: "AI 賦能未來甜點視覺：水滴抹茶塔",
+                category: "ai",
+                image: "https://images.unsplash.com/photo-1579372786545-d24232daf58c?auto=format&fit=crop&w=800&q=80",
+                desc: "運用 Midjourney 與 SD 模型，打造具有水滴極致質感的日系濃抹茶塔概念視覺。",
+                tags: ["AI圖像生成", "美食視覺設計", "概念產品"]
+            },
+            {
+                id: 3,
+                title: "【Reels 爆款企劃】30秒秒懂法式可頌折疊科學",
+                category: "video",
+                image: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800&q=80",
+                desc: "單支影片破 15 萬觀看！以節奏明快的宏觀特寫與聲效搭配，解析可頌蜂巢組織形成秘密。",
+                tags: ["短影音剪輯", "美食攝影", "知識型內容"]
+            },
+            {
+                id: 4,
+                title: "日式職人天然酵母酸生吐司",
+                category: "baking",
+                image: "https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=800&q=80",
+                desc: "長時間低溫發酵，搭配極致高質感表面割紋，彈韌口感與滿濃小麥香氣兼備。",
+                tags: ["高級生吐司", "發酵科學", "日式工藝"]
+            },
+            {
+                id: 5,
+                title: "商業級 AI 美食光影攝影生成模組",
+                category: "ai",
+                image: "https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=800&q=80",
+                desc: "研發專屬提示詞庫，可迅速為新菜單生成自然晨光與暗黑奢華風格攝影照，降低品牌試錯成本。",
+                tags: ["Prompt工程", "社群素材包", "品牌視覺"]
+            },
+            {
+                id: 6,
+                title: "甜點師的一天：職人幕後動態視覺",
+                category: "video",
+                image: "https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=800&q=80",
+                desc: "結合沈浸式 ASMR 與質感調色，為精品甜點店打造專屬品牌故事短影音。",
+                tags: ["品牌形象", "ASMR剪輯", "調色視覺"]
+            }
+        ];
+
+        const BLOG_POSTS = [
+            {
+                id: 1,
+                title: "【烘焙科學】為什麼你的戚風蛋糕總是塌陷？烘焙師教你拆解蛋白質打發與麵糊密碼",
+                category: "烘焙科學",
+                date: "2026-03-15",
+                readTime: "5 min read",
+                summary: "戚風蛋糕是許多烘焙初學者的痛點。本文從物理發泡結構與蛋白糊pH值切入，帶你一次掌握不失敗的底層原理。",
+                link: "#"
+            },
+            {
+                id: 2,
+                title: "【AI美學】如何用 Midjourney 生成「令人分泌唾液」的商業美食照？Prompt 關鍵字公開",
+                category: "AI視覺創作",
+                date: "2026-02-28",
+                readTime: "8 min read",
+                summary: "單純輸入“cake”只會得到平庸圖檔！分享光影質化、焦距參數與色彩學設定，打造頂級雜誌感美食視覺。",
+                link: "#"
+            },
+            {
+                id: 3,
+                title: "【社群剪輯】Reels 演算法最愛的甜點短影音：掌握前 3 秒 Hook 與聲音質感的秘密",
+                category: "短影音營運",
+                date: "2026-02-10",
+                readTime: "6 min read",
+                summary: "為什麼有些精緻作品乏人問津？關鍵在於「視覺節奏」與「聽覺儀式感」。拆解萬人點閱的視覺剪輯公式。",
+                link: "#"
+            }
+        ];
+
+        function App() {
+            const [activeTab, setActiveTab] = useState('home');
+            const [portfolioFilter, setPortfolioFilter] = useState('all');
+            const [selectedMedia, setSelectedMedia] = useState(null);
+            const [contactForm, setContactForm] = useState({ name: '', email: '', service: '烘焙產品研發', message: '' });
+            const [formSubmitted, setFormSubmitted] = useState(false);
+
+            useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }, [activeTab, portfolioFilter, selectedMedia]);
+
+            const filteredPortfolio = portfolioFilter === 'all' 
+                ? PORTFOLIO_ITEMS 
+                : PORTFOLIO_ITEMS.filter(item => item.category === portfolioFilter);
+
+            const handleFormSubmit = (e) => {
+                e.preventDefault();
+                setFormSubmitted(true);
+                setTimeout(() => {
+                    setFormSubmitted(false);
+                    setContactForm({ name: '', email: '', service: '烘焙產品研發', message: '' });
+                }, 4000);
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col justify-between relative">
+                    {/* Floating Header / Navigation */}
+                    <header className="sticky top-0 z-50 glass-card border-b border-brand-200/50">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                            <a href="#home" onClick={() => setActiveTab('home')} className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-brand-800 text-brand-50 flex items-center justify-center font-bold serif-title text-xl shadow-md">
+                                    鄭
+                                </div>
+                                <div>
+                                    <h1 className="font-bold text-lg text-brand-900 tracking-wide">鄭羽玲 <span className="text-xs font-normal text-brand-600 block sm:inline sm:ml-1">Yu-Ling Cheng</span></h1>
+                                    <p className="text-xs text-brand-500 font-medium">烘焙工藝 x 視覺整合 x AI 美感專家</p>
+                                </div>
+                            </a>
+
+                            {/* Desktop Nav */}
+                            <nav className="hidden md:flex items-center gap-1 bg-brand-100/60 p-1.5 rounded-full border border-brand-200">
+                                {[
+                                    { id: 'home', label: '首頁' },
+                                    { id: 'about', label: '關於我' },
+                                    { id: 'portfolio', label: '作品集 / 案例' },
+                                    { id: 'blog', label: '技術專欄' },
+                                    { id: 'contact', label: '聯絡我' },
+                                ].map((nav) => (
+                                    <button
+                                        key={nav.id}
+                                        onClick={() => setActiveTab(nav.id)}
+                                        className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                                            activeTab === nav.id
+                                                ? 'bg-brand-800 text-white shadow-sm'
+                                                : 'text-brand-700 hover:text-brand-900 hover:bg-brand-200/50'
+                                        }`}
+                                    >
+                                        {nav.label}
+                                    </button>
+                                ))}
+                            </nav>
+
+                            {/* Action CTA */}
+                            <button 
+                                onClick={() => setActiveTab('contact')}
+                                className="hidden lg:flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white px-5 py-2.5 rounded-full text-sm font-medium shadow-sm transition transform hover:-translate-y-0.5"
+                            >
+                                <i data-lucide="mail" className="w-4 h-4"></i>
+                                合作洽詢
+                            </button>
+                        </div>
+
+                        {/* Mobile Nav Bar */}
+                        <div className="md:hidden flex justify-around bg-brand-100/90 py-2.5 border-t border-brand-200 text-xs">
+                            <button onClick={() => setActiveTab('home')} className={`${activeTab === 'home' ? 'font-bold text-brand-900' : 'text-brand-600'}`}>首頁</button>
+                            <button onClick={() => setActiveTab('about')} className={`${activeTab === 'about' ? 'font-bold text-brand-900' : 'text-brand-600'}`}>關於我</button>
+                            <button onClick={() => setActiveTab('portfolio')} className={`${activeTab === 'portfolio' ? 'font-bold text-brand-900' : 'text-brand-600'}`}>作品集</button>
+                            <button onClick={() => setActiveTab('blog')} className={`${activeTab === 'blog' ? 'font-bold text-brand-900' : 'text-brand-600'}`}>專欄</button>
+                            <button onClick={() => setActiveTab('contact')} className={`${activeTab === 'contact' ? 'font-bold text-brand-900' : 'text-brand-600'}`}>聯絡我</button>
+                        </div>
+                    </header>
+
+                    {/* Main Content Sections */}
+                    <main className="flex-grow">
+                        {/* ================= HERO SECTION (HOME) ================= */}
+                        {activeTab === 'home' && (
+                            <div>
+                                <section className="relative py-20 lg:py-32 overflow-hidden bg-gradient-to-b from-brand-100/50 via-brand-50 to-white">
+                                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                                            <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+                                                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-200/60 text-brand-800 text-xs font-semibold tracking-wide uppercase">
+                                                    <span className="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
+                                                    國立高雄餐旅大學 烘焙管理學系 畢業
+                                                </div>
+                                                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-brand-900 leading-tight">
+                                                    用美味奠定基礎，<br/>
+                                                    <span className="serif-title italic font-normal text-brand-600">以科技與視覺</span> 賦予甜點全新生命
+                                                </h1>
+                                                <p className="text-brand-700 text-lg sm:text-xl max-w-2xl leading-relaxed mx-auto lg:mx-0 font-light">
+                                                    擁有 JR東日本飯店與亞尼克等知名品牌實務經驗。持有「乙級烘焙食品」證照，跨足短影音創作與 AI 美感圖像生成，打造味覺與數位視覺的雙重饗宴。
+                                                </p>
+                                                <div className="pt-4 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                                                    <button 
+                                                        onClick={() => setActiveTab('portfolio')} 
+                                                        className="bg-brand-800 hover:bg-brand-900 text-white px-8 py-4 rounded-full font-medium shadow-md transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                                                    >
+                                                        探索精選作品集
+                                                        <i data-lucide="arrow-right" className="w-4 h-4"></i>
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => setActiveTab('about')} 
+                                                        className="border border-brand-400 text-brand-800 hover:bg-brand-100 px-8 py-4 rounded-full font-medium transition flex items-center justify-center"
+                                                    >
+                                                        深入了解我的經驗
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {/* Hero Visual Card */}
+                                            <div className="lg:col-span-5 relative">
+                                                <div className="relative mx-auto max-w-md lg:max-w-none">
+                                                    <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl border-4 border-white relative bg-brand-200">
+                                                        <img 
+                                                            src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=1000&q=80" 
+                                                            alt="鄭羽玲 烘焙與美學展演" 
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                        <div className="absolute inset-0 bg-gradient-to-t from-brand-900/80 via-transparent to-transparent flex flex-col justify-end p-8 text-white">
+                                                            <span className="text-brand-300 text-sm font-semibold tracking-wider">CREATIVE EXPERTISE</span>
+                                                            <h3 className="text-2xl font-bold">烘焙科學 x 短影音 x AI 視覺</h3>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    {/* Floating Badge */}
+                                                    <div className="absolute -bottom-6 -left-6 glass-card p-4 rounded-2xl shadow-xl flex items-center gap-4 max-w-xs border border-brand-200">
+                                                        <div className="w-12 h-12 rounded-xl bg-brand-800 text-white flex items-center justify-center shrink-0">
+                                                            <i data-lucide="award" className="w-6 h-6"></i>
+                                                        </div>
+                                                        <div>
+                                                            <div className="font-bold text-sm text-brand-900">國家乙級烘焙證照</div>
+                                                            <div className="text-xs text-brand-600">西點蛋糕麵包最高等次</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                {/* Quick Highlights */}
+                                <section className="py-16 bg-white border-y border-brand-200/60">
+                                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                            <div className="p-8 rounded-2xl bg-brand-50 border border-brand-100 space-y-3 hover:shadow-lg transition">
+                                                <div className="w-12 h-12 rounded-lg bg-brand-200 text-brand-800 flex items-center justify-center">
+                                                    <i data-lucide="chef-hat" className="w-6 h-6"></i>
+                                                </div>
+                                                <h3 className="text-xl font-bold text-brand-900">烘焙產品研發</h3>
+                                                <p className="text-brand-600 text-sm leading-relaxed">
+                                                    歷經知名企業點心房洗禮，具備精準法式與日式配方調整、產品穩定度優化與食材風味搭配等硬實力。
+                                                </p>
+                                            </div>
+
+                                            <div className="p-8 rounded-2xl bg-brand-50 border border-brand-100 space-y-3 hover:shadow-lg transition">
+                                                <div className="w-12 h-12 rounded-lg bg-brand-200 text-brand-800 flex items-center justify-center">
+                                                    <i data-lucide="video" className="w-6 h-6"></i>
+                                                </div>
+                                                <h3 className="text-xl font-bold text-brand-900">社群短影音企劃</h3>
+                                                <p className="text-brand-600 text-sm leading-relaxed">
+                                                    熟悉 IG Reels / TikTok 等視覺演算法，精通拍攝分鏡、ASMR 音效處理與明快節奏剪輯，極速提升品牌黏著度。
+                                                </p>
+                                            </div>
+
+                                            <div className="p-8 rounded-2xl bg-brand-50 border border-brand-100 space-y-3 hover:shadow-lg transition">
+                                                <div className="w-12 h-12 rounded-lg bg-brand-200 text-brand-800 flex items-center justify-center">
+                                                    <i data-lucide="sparkles" className="w-6 h-6"></i>
+                                                </div>
+                                                <h3 className="text-xl font-bold text-brand-900">AI 美感圖像生成</h3>
+                                                <p className="text-brand-600 text-sm leading-relaxed">
+                                                    活用 Midjourney 及 AI 視覺模型，在實體樣品產出前精準生成概念照，助品牌以極低成本呈現頂級視覺。
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        )}
+
+                        {/* ================= ABOUT ME SECTION ================= */}
+                        {(activeTab === 'about' || activeTab === 'home') && (
+                            <section className={`py-20 ${activeTab === 'home' ? 'bg-brand-50/50' : 'bg-white'}`}>
+                                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                                    <div className="text-center max-w-3xl mx-auto mb-16">
+                                        <span className="text-brand-600 font-semibold text-sm tracking-wider uppercase">ABOUT ME</span>
+                                        <h2 className="text-3xl sm:text-4xl font-bold text-brand-900 mt-2">關於我 — 鄭羽玲</h2>
+                                        <div className="w-16 h-1 bg-brand-400 mx-auto mt-4 rounded-full"></div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                                        {/* Main Narrative Text */}
+                                        <div className="lg:col-span-7 space-y-6">
+                                            <div className="glass-card p-8 sm:p-10 rounded-3xl shadow-sm border border-brand-200 space-y-6">
+                                                <h3 className="text-2xl font-bold text-brand-900 leading-snug">
+                                                    用美味奠定基礎，用科技與視覺賦予甜點全新生命力
+                                                </h3>
+                                                <p className="text-brand-800 leading-relaxed font-normal">
+                                                    「當頂級烘焙工藝遇上生成式 AI 與短影音視覺，甜點不再只是味蕾的享受，更是一場跨越感官的數位美學體驗。」
+                                                </p>
+                                                <p className="text-brand-700 leading-relaxed text-sm sm:text-base">
+                                                    我是鄭羽玲，畢業於國立高雄餐旅大學烘焙管理學系，擁有超過 3 年精緻烘焙研發與實務經驗。曾任職於 <strong>JR東日本飯店點心房</strong> 與 <strong>亞尼克菓子工坊</strong> 等知名企業，深諳日式職人精神與現代烘焙產業的運作脈絡。我持有國家「烘焙食品-西點蛋糕麵包乙級」權威證照，並具備專業咖啡師與飲料調製技能，始終堅持以嚴謹的烘焙科學與細緻的手藝，創造出兼具品質與溫度的作品。
+                                                </p>
+                                                <p className="text-brand-700 leading-relaxed text-sm sm:text-base">
+                                                    然而，在數位時代，優秀的產品需要更具穿透力的傳播載體。我將對烘焙的專業熱情延伸至自媒體經營領域，精通 <strong>社群短影音剪輯</strong> 與 <strong>生成式 AI 美感圖像創作</strong>。透過結合食品工藝與前沿科技，我能精準抓取視覺張力，將實體甜點轉化為令人駐足的數位內容，為品牌賦予獨一無二的美學視野。
+                                                </p>
+                                                <p className="text-brand-700 leading-relaxed text-sm sm:text-base">
+                                                    無論是烘焙產品研發、跨界視覺企劃，或是利用 AI 賦能美食視覺，我都致力於提供創新、精準且值得信賴的解決方案。邀請您一同探索這場結合味覺與視覺的數位美學之旅。
+                                                </p>
+                                            </div>
+
+                                            {/* Career Timeline */}
+                                            <div className="space-y-4 pt-4">
+                                                <h4 className="text-xl font-bold text-brand-900 flex items-center gap-2">
+                                                    <i data-lucide="briefcase" className="w-5 h-5 text-brand-600"></i>
+                                                    業界經歷與里程碑
+                                                </h4>
+                                                <div className="space-y-4 border-l-2 border-brand-300 pl-6 ml-2">
+                                                    {EXPERIENCES.map((exp, idx) => (
+                                                        <div key={idx} className="relative group">
+                                                            <div className="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-brand-500 border-4 border-white group-hover:scale-125 transition"></div>
+                                                            <div className="bg-white p-5 rounded-2xl border border-brand-200 shadow-sm">
+                                                                <div className="flex justify-between items-start flex-wrap gap-2">
+                                                                    <h5 className="font-bold text-brand-900 text-lg">{exp.company}</h5>
+                                                                    <span className="text-xs bg-brand-100 text-brand-800 px-2.5 py-1 rounded-full font-medium">{exp.period}</span>
+                                                                </div>
+                                                                <div className="text-brand-600 text-sm font-medium mt-1">{exp.role}</div>
+                                                                <p className="text-brand-600 text-xs mt-2 leading-relaxed">{exp.highlights}</p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Certifications Sidebar */}
+                                        <div className="lg:col-span-5 space-y-6">
+                                            <div className="bg-brand-900 text-white p-8 rounded-3xl shadow-xl space-y-6">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-xl bg-brand-700 flex items-center justify-center text-brand-200">
+                                                        <i data-lucide="file-check" className="w-5 h-5"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="font-bold text-xl text-white">專業認證與檢定</h4>
+                                                        <p className="text-brand-300 text-xs">多元跨界實力背書</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-3 custom-scrollbar max-h-[500px] overflow-y-auto pr-2">
+                                                    {CERTIFICATIONS.map((cert, index) => (
+                                                        <div key={index} className="p-4 rounded-2xl bg-brand-800/80 border border-brand-700 hover:border-brand-500 transition">
+                                                            <div className="flex justify-between items-center text-xs text-brand-300 font-semibold mb-1">
+                                                                <span>{cert.category}</span>
+                                                                <i data-lucide="check-circle-2" className="w-4 h-4 text-emerald-400"></i>
+                                                            </div>
+                                                            <div className="font-bold text-sm text-white">{cert.title}</div>
+                                                            <p className="text-xs text-brand-300 mt-1 font-light">{cert.desc}</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {/* Skill Mix Indicator */}
+                                            <div className="p-6 bg-brand-100 rounded-3xl border border-brand-200 space-y-4">
+                                                <h4 className="font-bold text-brand-900 text-sm uppercase tracking-wider">核心跨界能力矩陣</h4>
+                                                
+                                                <div className="space-y-3 text-xs font-semibold text-brand-800">
+                                                    <div>
+                                                        <div className="flex justify-between mb-1">
+                                                            <span>精緻烘焙工藝 & 配方研發</span>
+                                                            <span>95%</span>
+                                                        </div>
+                                                        <div className="w-full bg-brand-200 h-2 rounded-full overflow-hidden">
+                                                            <div className="bg-brand-800 h-full rounded-full w-[95%]"></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <div className="flex justify-between mb-1">
+                                                            <span>美食短影音企劃 & 剪輯</span>
+                                                            <span>90%</span>
+                                                        </div>
+                                                        <div className="w-full bg-brand-200 h-2 rounded-full overflow-hidden">
+                                                            <div className="bg-brand-600 h-full rounded-full w-[90%]"></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <div className="flex justify-between mb-1">
+                                                            <span>生成式 AI 視覺圖像創作</span>
+                                                            <span>88%</span>
+                                                        </div>
+                                                        <div className="w-full bg-brand-200 h-2 rounded-full overflow-hidden">
+                                                            <div className="bg-brand-500 h-full rounded-full w-[88%]"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        )}
+
+                        {/* ================= PORTFOLIO SECTION ================= */}
+                        {(activeTab === 'portfolio' || activeTab === 'home') && (
+                            <section className="py-20 bg-brand-50">
+                                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                                    <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
+                                        <div>
+                                            <span className="text-brand-600 font-semibold text-sm tracking-wider uppercase">PORTFOLIO SHOWCASE</span>
+                                            <h2 className="text-3xl sm:text-4xl font-bold text-brand-900 mt-2">精選作品與案例展示</h2>
+                                        </div>
+
+                                        {/* Filter Tabs */}
+                                        <div className="mt-6 md:mt-0 flex flex-wrap gap-2 bg-brand-200/50 p-1.5 rounded-2xl border border-brand-300/40">
+                                            {[
+                                                { id: 'all', label: '全部作品' },
+                                                { id: 'baking', label: '烘焙研發' },
+                                                { id: 'video', label: '短影音創作' },
+                                                { id: 'ai', label: 'AI 視覺生成' },
+                                            ].map((filter) => (
+                                                <button
+                                                    key={filter.id}
+                                                    onClick={() => setPortfolioFilter(filter.id)}
+                                                    className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition ${
+                                                        portfolioFilter === filter.id
+                                                            ? 'bg-brand-800 text-white shadow-sm'
+                                                            : 'text-brand-700 hover:text-brand-900'
+                                                    }`}
+                                                >
+                                                    {filter.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Portfolio Cards Grid */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                        {filteredPortfolio.map((item) => (
+                                            <div 
+                                                key={item.id}
+                                                onClick={() => setSelectedMedia(item)}
+                                                className="group bg-white rounded-3xl overflow-hidden border border-brand-200/80 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col justify-between"
+                                            >
+                                                <div>
+                                                    <div className="relative aspect-[4/3] overflow-hidden bg-brand-200">
+                                                        <img 
+                                                            src={item.image} 
+                                                            alt={item.title} 
+                                                            className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                                                        />
+                                                        <div className="absolute top-4 left-4 bg-brand-900/80 text-white text-xs px-3 py-1 rounded-full backdrop-blur-md">
+                                                            {item.category === 'baking' ? '烘焙研發' : item.category === 'video' ? '短影音' : 'AI 視覺'}
+                                                        </div>
+                                                    </div>
+                                                    <div className="p-6">
+                                                        <h3 className="font-bold text-lg text-brand-900 group-hover:text-brand-600 transition">
+                                                            {item.title}
+                                                        </h3>
+                                                        <p className="text-brand-600 text-sm mt-2 line-clamp-2">
+                                                            {item.desc}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="px-6 pb-6 pt-2 flex flex-wrap gap-1.5 border-t border-brand-100/60 mt-auto">
+                                                    {item.tags.map((tag, tIdx) => (
+                                                        <span key={tIdx} className="text-[10px] bg-brand-100 text-brand-800 px-2 py-0.5 rounded-md font-medium">
+                                                            #{tag}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </section>
+                        )}
+
+                        {/* ================= BLOG SECTION ================= */}
+                        {(activeTab === 'blog' || activeTab === 'home') && (
+                            <section className="py-20 bg-white">
+                                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                                    <div className="text-center max-w-3xl mx-auto mb-16">
+                                        <span className="text-brand-600 font-semibold text-sm tracking-wider uppercase">INSIGHTS & BLOG</span>
+                                        <h2 className="text-3xl sm:text-4xl font-bold text-brand-900 mt-2">技術專欄與美學觀點</h2>
+                                        <p className="text-brand-600 text-sm mt-3">分享烘焙科學原理、AI 美食視覺 Prompt 應用與短影音經營實務</p>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                        {BLOG_POSTS.map((post) => (
+                                            <article key={post.id} className="p-8 rounded-3xl bg-brand-50 border border-brand-200 hover:border-brand-400 transition flex flex-col justify-between">
+                                                <div className="space-y-4">
+                                                    <div className="flex justify-between items-center text-xs text-brand-500">
+                                                        <span className="bg-brand-200 text-brand-800 px-2.5 py-1 rounded-full font-semibold">{post.category}</span>
+                                                        <span>{post.readTime}</span>
+                                                    </div>
+                                                    <h3 className="font-bold text-xl text-brand-900 hover:text-brand-600 transition leading-snug">
+                                                        {post.title}
+                                                    </h3>
+                                                    <p className="text-brand-600 text-sm leading-relaxed">
+                                                        {post.summary}
+                                                    </p>
+                                                </div>
+                                                <div className="pt-6 border-t border-brand-200/60 mt-6 flex justify-between items-center text-xs text-brand-700 font-medium">
+                                                    <span>{post.date}</span>
+                                                    <button onClick={() => alert('專欄文章閱讀功能：完整文章隨時可為您調閱！')} className="text-brand-800 font-bold hover:underline flex items-center gap-1">
+                                                        閱讀全文 <i data-lucide="chevron-right" className="w-3.5 h-3.5"></i>
+                                                    </button>
+                                                </div>
+                                            </article>
+                                        ))}
+                                    </div>
+                                </div>
+                            </section>
+                        )}
+
+                        {/* ================= CONTACT SECTION ================= */}
+                        {(activeTab === 'contact' || activeTab === 'home') && (
+                            <section className="py-20 bg-brand-900 text-white relative overflow-hidden">
+                                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                                        
+                                        {/* Contact Info */}
+                                        <div className="lg:col-span-5 space-y-8">
+                                            <div>
+                                                <span className="text-brand-300 font-semibold text-sm tracking-wider uppercase">GET IN TOUCH</span>
+                                                <h2 className="text-3xl sm:text-4xl font-bold mt-2 text-white">啟動您的跨界合作案</h2>
+                                                <p className="text-brand-300 text-sm mt-4 leading-relaxed">
+                                                    無論您是實體餐飲品牌需要「烘焙新品研發」、自媒體想提升「社群影音質感」，或是欲運用「AI視覺」為甜點進行包裝設計，都歡迎與我聯繫。
+                                                </p>
+                                            </div>
+
+                                            <div className="space-y-4">
+                                                <div className="flex items-center gap-4 p-4 rounded-2xl bg-brand-800/60 border border-brand-700">
+                                                    <div className="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shrink-0">
+                                                        <i data-lucide="mail" className="w-5 h-5"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-xs text-brand-300">合作信箱 Email</div>
+                                                        <div className="font-semibold text-sm">yuling.cheng.baking@gmail.com</div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex items-center gap-4 p-4 rounded-2xl bg-brand-800/60 border border-brand-700">
+                                                    <div className="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shrink-0">
+                                                        <i data-lucide="map-pin" className="w-5 h-5"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-xs text-brand-300">工作地點 Location</div>
+                                                        <div className="font-semibold text-sm">台灣 台北 / 高雄 (可遠端/線上下單)</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-4">
+                                                <div className="text-xs text-brand-400 mb-3 uppercase tracking-wider font-semibold">關注我的創作社群</div>
+                                                <div className="flex gap-3">
+                                                    {['Instagram', 'YouTube', 'TikTok', 'LinkedIn'].map((social, sIdx) => (
+                                                        <span key={sIdx} className="px-4 py-2 rounded-xl bg-brand-800 border border-brand-700 text-xs text-brand-200 hover:bg-brand-700 cursor-pointer transition">
+                                                            {social}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Contact Form */}
+                                        <div className="lg:col-span-7">
+                                            <div className="bg-white text-brand-900 p-8 sm:p-10 rounded-3xl shadow-2xl">
+                                                <h3 className="text-2xl font-bold mb-6">合作意向表單</h3>
+
+                                                {formSubmitted ? (
+                                                    <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-6 rounded-2xl text-center space-y-2">
+                                                        <i data-lucide="check-circle" className="w-12 h-12 text-emerald-600 mx-auto"></i>
+                                                        <h4 className="font-bold text-lg">感謝您的訊息！</h4>
+                                                        <p className="text-sm">我已收到您的合作洽詢，將於 1-2 個工作天內回覆您。</p>
+                                                    </div>
+                                                ) : (
+                                                    <form onSubmit={handleFormSubmit} className="space-y-5">
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                                            <div>
+                                                                <label className="block text-xs font-bold uppercase text-brand-700 mb-2">您的姓名 / 寶號</label>
+                                                                <input 
+                                                                    type="text" 
+                                                                    required
+                                                                    value={contactForm.name}
+                                                                    onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
+                                                                    placeholder="請輸入姓名"
+                                                                    className="w-full px-4 py-3 rounded-xl bg-brand-50 border border-brand-200 text-sm focus:outline-none focus:border-brand-600"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-xs font-bold uppercase text-brand-700 mb-2">電子信箱 Email</label>
+                                                                <input 
+                                                                    type="email" 
+                                                                    required
+                                                                    value={contactForm.email}
+                                                                    onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
+                                                                    placeholder="name@company.com"
+                                                                    className="w-full px-4 py-3 rounded-xl bg-brand-50 border border-brand-200 text-sm focus:outline-none focus:border-brand-600"
+                                                                />
+                                                            </div>
+                                                        </div>
+
+                                                        <div>
+                                                            <label className="block text-xs font-bold uppercase text-brand-700 mb-2">預計諮詢/合作項目</label>
+                                                            <select 
+                                                                value={contactForm.service}
+                                                                onChange={(e) => setContactForm({...contactForm, service: e.target.value})}
+                                                                className="w-full px-4 py-3 rounded-xl bg-brand-50 border border-brand-200 text-sm focus:outline-none focus:border-brand-600"
+                                                            >
+                                                                <option value="烘焙產品研發">烘焙產品研發與技術指導</option>
+                                                                <option value="美食短影音企劃剪輯">美食短影音企劃與社群剪輯</option>
+                                                                <option value="AI 視覺圖像創作模組">AI 美彩視覺圖像創作與模組設計</option>
+                                                                <option value="全方位品牌跨界整合">全方位品牌跨界顧問合作</option>
+                                                            </select>
+                                                        </div>
+
+                                                        <div>
+                                                            <label className="block text-xs font-bold uppercase text-brand-700 mb-2">專案細節與需求說明</label>
+                                                            <textarea 
+                                                                rows="4"
+                                                                required
+                                                                value={contactForm.message}
+                                                                onChange={(e) => setContactForm({...contactForm, message: e.target.value})}
+                                                                placeholder="請簡述您的需求、預期時程或目標..."
+                                                                className="w-full px-4 py-3 rounded-xl bg-brand-50 border border-brand-200 text-sm focus:outline-none focus:border-brand-600"
+                                                            ></textarea>
+                                                        </div>
+
+                                                        <button 
+                                                            type="submit" 
+                                                            className="w-full bg-brand-800 hover:bg-brand-900 text-white font-bold py-4 rounded-xl shadow-md transition duration-300 flex items-center justify-center gap-2"
+                                                        >
+                                                            送出合作意向
+                                                            <i data-lucide="send" className="w-4 h-4"></i>
+                                                        </button>
+                                                    </form>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        )}
+                    </main>
+
+                    {/* Modal Preview for Portfolio Items */}
+                    {selectedMedia && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+                            <div className="bg-white rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl relative animate-in fade-in zoom-in duration-200">
+                                <button 
+                                    onClick={() => setSelectedMedia(null)}
+                                    className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black text-white p-2 rounded-full transition"
+                                >
+                                    <i data-lucide="x" className="w-5 h-5"></i>
+                                </button>
+                                <div className="aspect-video bg-brand-900 relative">
+                                    <img src={selectedMedia.image} alt={selectedMedia.title} className="w-full h-full object-cover" />
+                                </div>
+                                <div className="p-8 space-y-4">
+                                    <div className="flex items-center gap-2">
+                                        <span className="bg-brand-100 text-brand-800 text-xs px-3 py-1 rounded-full font-bold">
+                                            {selectedMedia.category === 'baking' ? '烘焙研發' : selectedMedia.category === 'video' ? '短影音' : 'AI 視覺'}
+                                        </span>
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-brand-900">{selectedMedia.title}</h3>
+                                    <p className="text-brand-700 text-sm leading-relaxed">{selectedMedia.desc}</p>
+                                    <div className="pt-4 border-t border-brand-100 flex justify-between items-center">
+                                        <div className="flex gap-2">
+                                            {selectedMedia.tags.map((t, idx) => (
+                                                <span key={idx} className="text-xs bg-brand-50 text-brand-600 px-2.5 py-1 rounded-md">#{t}</span>
+                                            ))}
+                                        </div>
+                                        <button 
+                                            onClick={() => { setSelectedMedia(null); setActiveTab('contact'); }}
+                                            className="bg-brand-800 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-brand-900 transition"
+                                        >
+                                            預約同款專案
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Modern Footer */}
+                    <footer className="bg-brand-950 text-brand-400 py-12 border-t border-brand-800 text-sm">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-6">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-full bg-brand-800 text-brand-100 flex items-center justify-center font-bold serif-title text-sm">
+                                    鄭
+                                </div>
+                                <div>
+                                    <div className="font-bold text-white">鄭羽玲 Yu-Ling Cheng</div>
+                                    <div className="text-xs text-brand-500">© 2026 Yu-Ling Cheng. All rights reserved.</div>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-6 text-xs text-brand-300">
+                                <button onClick={() => setActiveTab('home')} className="hover:text-white">首頁</button>
+                                <button onClick={() => setActiveTab('about')} className="hover:text-white">關於我</button>
+                                <button onClick={() => setActiveTab('portfolio')} className="hover:text-white">作品案例</button>
+                                <button onClick={() => setActiveTab('blog')} className="hover:text-white">技術專欄</button>
+                                <button onClick={() => setActiveTab('contact')} className="hover:text-white">聯絡合作</button>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
